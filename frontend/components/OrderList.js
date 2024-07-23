@@ -1,74 +1,39 @@
-import React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useGetOrdersQuery } from "../state/apiSlice";
-import { setFilter } from "../state/filterSlice";
+import React from 'react';
 
-export default function OrderList() {
-  const { data: orders } = useGetOrdersQuery();
-  const dispatch = useDispatch();
-  const currentSize = useSelector((state) => state.filter.size); 
+const OrderList = ({ orders }) => {
+  const renderToppings = (toppingIds) => {
+    const toppingNames = toppingIds.map(id => {
+      switch (id) {
+        case '1':
+          return 'Pepperoni';
+        case '2':
+          return 'Green Peppers';
+        case '3':
+          return 'Pineapple';
+        case '4':
+          return 'Mushrooms';
+        case '5':
+          return 'Ham';
+        default:
+          return '';
+      }
+    });
+    return toppingNames.join(', ');
+  };
 
   return (
-  <div id="orderList">
-  <h2>Pizza Orders</h2>
-  <ol>
-  {currentSize === "All"
-  ? orders?.map((order) => {
-  return (
-  <li key={order.id}>
-   <div>
-   {order.customer} ordered a size {order.size} with
-   {order.toppings
-   ? order.toppings.map((topping, idx) => {
-   if (idx === order.toppings.length - 1) {
-  return ` ${idx + 1} ${
-   idx + 1 > 1 ? "toppings" : "topping"
-   }`;
-   }
-   })
-  : " no toppings"}
-   </div>
-   </li>
-      );
-    })
-    : orders?.map((order) => {
-    if (order.size === currentSize)
-    return (
-    <li key={order.id}>
-   <div>
-   {order.customer} ordered a size {order.size} with
-    {order.toppings
-   ? order.toppings.map((topping, idx) => {
-   if (idx === order.toppings.length - 1) {
-   return ` ${idx + 1} ${
-   idx + 1 > 1 ? "toppings" : "topping"
-   }`;
-  }
-})
- : " no toppings"}
- </div>
-</li>
- );
-})}
-</ol>
-<div id="sizeFilters">
-Filter by size:
-{["All", "S", "M", "L"].map((size) => {
-const className = `button-filter${
-size === currentSize ? " active" : ""
-  }`;
-    return (
-     <button
-       onClick={() => dispatch(setFilter(size))}
-       data-testid={`filterBtn${size}`}
-        className={className}
-         key={size}
-        >
-      {size}
-    </button>
-    );
-  })}
-   </div>
-  </div>
+    <ol>
+      {orders.map((order) => (
+        <li key={order.id}>
+          {`${order.fullName} ordered a size ${order.size} with ${
+            order.toppings.length > 0
+              ? renderToppings(order.toppings)
+              : 'no toppings'
+          }`}
+        </li>
+      ))}
+    </ol>
   );
-}
+};
+
+export default OrderList;
